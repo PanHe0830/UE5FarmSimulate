@@ -1,5 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+// 当前类是工具类
+
 #pragma once
 
 #include "CoreMinimal.h"
