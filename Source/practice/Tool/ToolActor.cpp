@@ -34,7 +34,7 @@ void AToolActor::BeginPlay()
 	
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AToolActor::OnSphereOverlap);
+	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AToolActor::OnSphereStartOverlap);
 	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AToolActor::OnSphereEndOverlap);
 
 	SetHeadShow(false);
@@ -52,9 +52,11 @@ void AToolActor::DropTool()
 	FDetachmentTransformRules DetachResult(EDetachmentRule::KeepWorld,true);
 	KnifeComponent->DetachFromComponent(DetachResult);
 	SetOwner(nullptr);
+
+	bEquipFlag = false;
 }
 
-void AToolActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AToolActor::OnSphereStartOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	SetHeadShow(true);
 	SetToolTopText();
@@ -71,11 +73,11 @@ void AToolActor::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	SetHeadShow(false);
 
-	APracticeCharacter* Character = Cast<APracticeCharacter>(OtherActor);
-	if (Character)
-	{
-		Character->SetToolActorPointer(nullptr);
-	}
+	//APracticeCharacter* Character = Cast<APracticeCharacter>(OtherActor);
+	//if (Character)
+	//{
+	//	Character->SetToolActorPointer(nullptr);
+	//}
 }
 
 void AToolActor::SetHeadShow(bool retFlag)

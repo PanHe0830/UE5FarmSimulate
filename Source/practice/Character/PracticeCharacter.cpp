@@ -109,6 +109,8 @@ void APracticeCharacter::CharacterDropTool()
 	if (ToolActor)
 	{
 		ToolActor->DropTool();
+
+		SetToolActorPointer(nullptr);
 	}
 }
 

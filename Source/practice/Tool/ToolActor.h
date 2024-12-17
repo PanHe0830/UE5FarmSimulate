@@ -30,7 +30,7 @@ public:
 
 protected:
 	UFUNCTION()
-	virtual void OnSphereOverlap(
+	virtual void OnSphereStartOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
@@ -60,6 +60,11 @@ protected:
 	class USphereComponent* AreaSphere;
 
 	void SetToolTopText();
+
+public:
+	UPROPERTY(VisibleAnywhere , Category = "Component")
+	bool bEquipFlag = false; // 当前工具是否装备
+
 public:
 	FORCEINLINE USkeletalMeshComponent* GeTToolMeshComponent() { return KnifeComponent; };
 	FORCEINLINE USphereComponent* GeTToolSphereComponent() { return AreaSphere; };

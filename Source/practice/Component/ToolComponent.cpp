@@ -53,6 +53,8 @@ void UToolComponent::EquipTool(AToolActor* Actor)
 	{
 		Sphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	}
+
+	CurrentTool->bEquipFlag = true;
 }
 
 void UToolComponent::DropTool()
@@ -65,6 +67,8 @@ void UToolComponent::DropTool()
 		{
 			Sphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 		}
+
+		CurrentTool->bEquipFlag = true;
 	}
 }
 
