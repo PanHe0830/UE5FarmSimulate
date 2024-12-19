@@ -119,7 +119,7 @@ void APracticeCharacter::CharacterDropTool()
 
 void APracticeCharacter::CharacterAttack()
 {
-	if (ToolActor && ToolComponent)
+	if (ToolActor &&ToolComponent)
 	{
 		ToolComponent->HandleAttack();
 	}
@@ -133,9 +133,17 @@ void APracticeCharacter::SetToolActorPointer(AToolActor* Tool)
 void APracticeCharacter::PlayAttackMontage()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AnimInstance->Montage_IsPlaying(AttackMontage))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Attack Montage is already playing!"));
+		return;
+	}
+
 	if (AttackMontage && AnimInstance)
 	{
-		AnimInstance->Montage_Play(AttackMontage);
+		AnimInstance->Montage_Play(AttackMontage, 1.0f);
 	}
+	
 }
 
