@@ -8,6 +8,8 @@
 #include "practice/Plant/PlantActor.h"
 #include "practice/Component/ToolComponent.h"
 #include "practice/Tool/ToolActor.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 
 // Sets default values
 APracticeCharacter::APracticeCharacter()
@@ -55,7 +57,8 @@ void APracticeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APracticeCharacter::Jump); 
 	PlayerInputComponent->BindAction("Damage", IE_Pressed, this, &APracticeCharacter::CauseDamage);
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &APracticeCharacter::CharacterEquip); 
-	PlayerInputComponent->BindAction("Drop", IE_Pressed, this, &APracticeCharacter::CharacterDropTool);
+	PlayerInputComponent->BindAction("Drop", IE_Pressed, this, &APracticeCharacter::CharacterDropTool); 
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APracticeCharacter::CharacterAttack);
 }
 
 void APracticeCharacter::CharacterMoveForward(float Value)
@@ -114,8 +117,25 @@ void APracticeCharacter::CharacterDropTool()
 	}
 }
 
+void APracticeCharacter::CharacterAttack()
+{
+	if (ToolActor && ToolComponent)
+	{
+		ToolComponent->HandleAttack();
+	}
+}
+
 void APracticeCharacter::SetToolActorPointer(AToolActor* Tool)
 {
 	ToolActor = Tool;
+}
+
+void APracticeCharacter::PlayAttackMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AttackMontage && AnimInstance)
+	{
+		AnimInstance->Montage_Play(AttackMontage);
+	}
 }
 

@@ -42,10 +42,17 @@ protected:
 	// 角色拾取装备函数
 	virtual void CharacterEquip();
 	// 角色扔掉工具
-	void CharacterDropTool();
+	virtual void CharacterDropTool();
+	// 角色攻击
+	virtual void CharacterAttack();
 
 public:
 	void SetToolActorPointer(class AToolActor* Tool);
+
+	/**
+	*	Play Montage
+	*/
+	void PlayAttackMontage();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
@@ -59,4 +66,7 @@ private:
 
 	UPROPERTY()
 	class AToolActor* ToolActor;
+
+	UPROPERTY(EditAnywhere, Category = "Montage")
+	class UAnimMontage* AttackMontage;
 };

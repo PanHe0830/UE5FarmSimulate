@@ -72,6 +72,13 @@ void UToolComponent::DropTool()
 	}
 }
 
+void UToolComponent::HandleAttack()
+{
+	if (Character == nullptr) return;
+
+	Character->PlayAttackMontage();
+}
+
 void UToolComponent::AttachActorToRightHand(AActor* ActorAttach)
 {
 	if (Character == nullptr || Character->GetMesh() == nullptr || ActorAttach == nullptr) return;

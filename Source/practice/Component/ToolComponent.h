@@ -45,6 +45,9 @@ public:
 	// 抛弃工具
 	void DropTool();
 
+	// 工具攻击
+	void HandleAttack();
+
 	UPROPERTY()
 	class AToolActor* CurrentTool;
 
