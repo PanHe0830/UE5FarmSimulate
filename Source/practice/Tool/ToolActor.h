@@ -25,8 +25,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void DrawDebugBoxx();
+
 	// 抛弃当前工具
 	void DropTool();
+
+	//void SetCurrentBoxLocation(class APracticeCharacter* Pointer);
 
 protected:
 	UFUNCTION()
@@ -49,6 +53,13 @@ protected:
 
 	void SetHeadShow(bool retFlag);
 
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnKnifeBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+		const FHitResult& SweepResult);
 
 	UPROPERTY(EditAnywhere, Category = "Component")
 	class USkeletalMeshComponent* KnifeComponent;
@@ -60,6 +71,12 @@ protected:
 	class USphereComponent* AreaSphere;
 
 	void SetToolTopText();
+
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* CollisionBox;
+
+	UPROPERTY(EditAnywhere)
+	int32 Damage = 50;
 
 public:
 	UPROPERTY(VisibleAnywhere , Category = "Component")

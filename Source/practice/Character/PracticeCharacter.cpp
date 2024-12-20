@@ -10,6 +10,7 @@
 #include "practice/Tool/ToolActor.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 APracticeCharacter::APracticeCharacter()
@@ -27,6 +28,15 @@ APracticeCharacter::APracticeCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	ToolComponent = CreateDefaultSubobject<UToolComponent>(TEXT("ToolComponent"));
+
+	RightHandBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
+	RightHandBox->SetupAttachment(GetMesh());
+	RightHandBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); // 启用碰撞
+	RightHandBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); // 设置为动态物体
+	RightHandBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 忽略所有默认通道
+	RightHandBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block); // 与树木（物理物体）发生碰撞
+	RightHandBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	RightHandBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 }
 
 // Called when the game starts or when spawned
@@ -35,6 +45,21 @@ void APracticeCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	ToolComponent->SetCurrentCharacter(this);
+	RightHandBox->OnComponentHit.AddDynamic(this,&APracticeCharacter::OnHit);
+}
+
+void APracticeCharacter::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	APracticeCharacter* Character = Cast<APracticeCharacter>(OtherActor);
+	if (Character)
+	{
+		AController* CharacterController = Cast<AController>(Character->Controller);
+		if (CharacterController)
+		{
+			UGameplayStatics::ApplyDamage(OtherActor, 10, CharacterController, this, UDamageType::StaticClass());
+		}
+	}
+
 }
 
 // Called every frame
@@ -42,6 +67,15 @@ void APracticeCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//if (ToolActor)
+	//{
+	//	ToolActor->SetCurrentBoxLocation(this);
+	//}
+	FVector BoxOrigin = RightHandBox->GetComponentLocation();
+	FVector BoxExtent = RightHandBox->GetScaledBoxExtent(); // 获取碰撞盒的尺寸
+	
+	// 画出调试框
+	DrawDebugBox(GetWorld(), BoxOrigin, BoxExtent, FQuat::Identity, FColor::Green, false, -1.0f, 0, 2.0f);
 }
 
 // Called to bind functionality to input
