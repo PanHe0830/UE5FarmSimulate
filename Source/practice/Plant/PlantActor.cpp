@@ -29,6 +29,7 @@ APlantActor::APlantActor()
 	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	CollisionBox->SetMobility(EComponentMobility::Movable);
 }
 
 // Called when the game starts or when spawned
