@@ -20,7 +20,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnHitHand(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	
+	UFUNCTION()
+	void OnHitBody(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 public:	
 	// Called every frame
@@ -75,4 +78,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	class UBoxComponent* RightHandBox;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	class UBoxComponent* BodyBox;
 };
