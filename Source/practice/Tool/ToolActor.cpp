@@ -33,7 +33,6 @@ AToolActor::AToolActor()
 	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 忽略所有默认通道
-	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore); // 与树木（物理物体）发生碰撞
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 }
 
