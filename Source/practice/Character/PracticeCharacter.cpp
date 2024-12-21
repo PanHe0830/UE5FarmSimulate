@@ -11,6 +11,7 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Components/BoxComponent.h"
+#include "practice/practice.h"
 
 // Sets default values
 APracticeCharacter::APracticeCharacter()
@@ -28,27 +29,6 @@ APracticeCharacter::APracticeCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	ToolComponent = CreateDefaultSubobject<UToolComponent>(TEXT("ToolComponent"));
-
-	RightHandBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-	RightHandBox->SetupAttachment(GetMesh());
-	RightHandBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); // 启用碰撞
-	RightHandBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic); // 设置为动态物体
-	RightHandBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 忽略所有默认通道
-	RightHandBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block); // 与树木（物理物体）发生碰撞
-	RightHandBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	RightHandBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-
-	BodyBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Body"));
-	BodyBox->SetupAttachment(GetMesh());
-	BodyBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); // 启用碰撞
-	BodyBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic); // 设置为动态物体
-	BodyBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 忽略所有默认通道
-	BodyBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block); // 与树木（物理物体）发生碰撞
-	BodyBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	BodyBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-
-	BodyBox->GetGenerateOverlapEvents();
-	BodyBox->CanEverAffectNavigation();
 }
 
 // Called when the game starts or when spawned
@@ -57,19 +37,11 @@ void APracticeCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	ToolComponent->SetCurrentCharacter(this);
-	RightHandBox->OnComponentHit.AddDynamic(this,&APracticeCharacter::OnHitHand);
-
-	BodyBox->OnComponentHit.AddDynamic(this, &APracticeCharacter::OnHitBody);
 }
 
 void APracticeCharacter::OnHitHand(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnHitHand"));
-}
-
-void APracticeCharacter::OnHitBody(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	UE_LOG(LogTemp, Warning, TEXT("OnHitBody"));
 }
 
 // Called every frame
@@ -81,17 +53,11 @@ void APracticeCharacter::Tick(float DeltaTime)
 	//{
 	//	ToolActor->SetCurrentBoxLocation(this);
 	//}
-	FVector BoxOrigin = RightHandBox->GetComponentLocation();
-	FVector BoxExtent = RightHandBox->GetScaledBoxExtent(); // 获取碰撞盒的尺寸
-	
-	// 画出调试框
-	DrawDebugBox(GetWorld(), BoxOrigin, BoxExtent, FQuat::Identity, FColor::Green, false, -1.0f, 0, 2.0f);
-
-	FVector BoxOriginb = BodyBox->GetComponentLocation();
-	FVector BoxExtentb = BodyBox->GetScaledBoxExtent(); // 获取碰撞盒的尺寸
-
-	// 画出调试框
-	DrawDebugBox(GetWorld(), BoxOriginb, BoxExtentb, FQuat::Identity, FColor::Green, false, -1.0f, 0, 2.0f);
+	//FVector BoxOrigin = RightHandBox->GetComponentLocation();
+	//FVector BoxExtent = RightHandBox->GetScaledBoxExtent(); // 获取碰撞盒的尺寸
+	//
+	//// 画出调试框
+	//DrawDebugBox(GetWorld(), BoxOrigin, BoxExtent, FQuat::Identity, FColor::Green, false, -1.0f, 0, 2.0f);
 }
 
 // Called to bind functionality to input

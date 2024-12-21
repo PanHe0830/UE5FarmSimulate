@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "practice/Character/PracticeCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "practice/practice.h"
 
 // Sets default values
 APlantActor::APlantActor()
@@ -16,16 +17,18 @@ APlantActor::APlantActor()
 	TreeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tree"));
 	TreeMesh->SetupAttachment(RootComponent);
 	TreeMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	TreeMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	TreeMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	TreeMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
+	TreeMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	CollisionBox->SetupAttachment(TreeMesh);
-	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); // 启用碰撞
-	CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic); // 设置为静态物体（树木通常是静态的）
-	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 默认忽略所有通道
-	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block);
-	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
-	//CollisionBox->SetSimulatePhysics(true);
+	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
 // Called when the game starts or when spawned
@@ -35,6 +38,7 @@ void APlantActor::BeginPlay()
 	
 	OnTakeAnyDamage.AddDynamic(this,&APlantActor::Damage);
 	CollisionBox->OnComponentHit.AddDynamic(this,&APlantActor::OnHit);
+	CollisionBox->OnComponentBeginOverlap.AddDynamic(this,&APlantActor::Begin);
 }
 
 // Called every frame
@@ -72,4 +76,9 @@ void APlantActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		}
 	}
 
+}
+
+void APlantActor::Begin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Plant Begin"));
 }

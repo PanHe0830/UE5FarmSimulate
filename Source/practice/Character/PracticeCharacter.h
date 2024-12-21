@@ -22,9 +22,6 @@ protected:
 	UFUNCTION()
 	void OnHitHand(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
-	UFUNCTION()
-	void OnHitBody(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -75,10 +72,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	class UAnimMontage* AttackMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	class UBoxComponent* RightHandBox;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	class UBoxComponent* BodyBox;
 };

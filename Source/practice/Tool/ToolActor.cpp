@@ -29,15 +29,12 @@ AToolActor::AToolActor()
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-	CollisionBox->SetupAttachment(KnifeComponent);
-	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); // 启用碰撞
-	CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); // 设置为动态物体
+	CollisionBox->SetupAttachment(KnifeComponent,FName("Blade_end"));
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 忽略所有默认通道
-	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block); // 与树木（物理物体）发生碰撞
-	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore); // 与树木（物理物体）发生碰撞
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-	//CollisionBox->SetSimulatePhysics(true);
-	CollisionBox->SetGenerateOverlapEvents(true);
 }
 
 // Called when the game starts or when spawned
@@ -55,7 +52,6 @@ void AToolActor::BeginPlay()
 	if (CollisionBox)
 	{
 		CollisionBox->OnComponentHit.AddDynamic(this, &AToolActor::OnHit);
-		CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AToolActor::OnKnifeBeginOverlap);
 	}
 }
 
@@ -84,18 +80,6 @@ void AToolActor::DropTool()
 
 	bEquipFlag = false;
 }
-
-//void AToolActor::SetCurrentBoxLocation(APracticeCharacter* Pointer)
-//{
-//	if (CollisionBox)
-//	{
-//		FVector HandLocation = Pointer->GetMesh()->GetSocketLocation("KnifeHand");
-//		FRotator HandRotation = KnifeComponent->GetComponentRotation();
-//		UE_LOG(LogTemp, Warning, TEXT("HandRotation: %s"), *HandRotation.ToString());
-//
-//		CollisionBox->SetRelativeLocationAndRotation(HandLocation, HandRotation);
-//	}
-//}
 
 void AToolActor::OnSphereStartOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -131,6 +115,8 @@ void AToolActor::SetHeadShow(bool retFlag)
 
 void AToolActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Tool OnHit"));
+#if 0
 	APracticeCharacter* Character = Cast<APracticeCharacter>(OtherActor);
 	if (Character)
 	{
@@ -140,22 +126,7 @@ void AToolActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 			UGameplayStatics::ApplyDamage(OtherActor, Damage, CharacterController, this, UDamageType::StaticClass());
 		}
 	}
-
-}
-
-void AToolActor::OnKnifeBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnKnifeBeginOverlap"));
-	//if (OtherActor && OtherActor->IsA(ATreeActor::StaticClass()))  // 检查树木类型
-	//{
-	//	// 对树木应用伤害
-	//	ATreeActor* TreeActor = Cast<ATreeActor>(OtherActor);
-	//	if (TreeActor)
-	//	{
-	//		TreeActor->ApplyDamage(10.0f);
-	//	}
-	//}
-
+#endif
 }
 
 void AToolActor::SetToolTopText()
