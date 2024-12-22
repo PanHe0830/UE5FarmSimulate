@@ -97,11 +97,11 @@ void AToolActor::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	SetHeadShow(false);
 
-	//APracticeCharacter* Character = Cast<APracticeCharacter>(OtherActor);
-	//if (Character)
-	//{
-	//	Character->SetToolActorPointer(nullptr);
-	//}
+	APracticeCharacter* Character = Cast<APracticeCharacter>(OtherActor);
+	if (Character)
+	{
+		Character->SetToolActorPointer(nullptr);
+	}
 }
 
 void AToolActor::SetHeadShow(bool retFlag)
@@ -115,17 +115,6 @@ void AToolActor::SetHeadShow(bool retFlag)
 void AToolActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Tool OnHit"));
-#if 0
-	APracticeCharacter* Character = Cast<APracticeCharacter>(OtherActor);
-	if (Character)
-	{
-		AController* CharacterController = Cast<AController>(Character->Controller);
-		if (CharacterController)
-		{
-			UGameplayStatics::ApplyDamage(OtherActor, Damage, CharacterController, this, UDamageType::StaticClass());
-		}
-	}
-#endif
 }
 
 void AToolActor::SetToolTopText()

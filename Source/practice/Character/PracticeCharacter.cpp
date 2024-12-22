@@ -12,6 +12,11 @@
 #include "Animation/AnimMontage.h"
 #include "Components/BoxComponent.h"
 #include "practice/practice.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputActionValue.h"
+
+DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 // Sets default values
 APracticeCharacter::APracticeCharacter()
@@ -39,25 +44,46 @@ void APracticeCharacter::BeginPlay()
 	ToolComponent->SetCurrentCharacter(this);
 }
 
-void APracticeCharacter::OnHitHand(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void APracticeCharacter::Move(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnHitHand"));
+	// input is a Vector2D
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		// get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
+		AddMovementInput(ForwardDirection, MovementVector.Y);
+		AddMovementInput(RightDirection, MovementVector.X);
+	}
+}
+
+void APracticeCharacter::Look(const FInputActionValue& Value)
+{	
+	// input is a Vector2D
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// add yaw and pitch input to controller
+		AddControllerYawInput(LookAxisVector.X);
+		AddControllerPitchInput(LookAxisVector.Y);
+	}
 }
 
 // Called every frame
 void APracticeCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//if (ToolActor)
-	//{
-	//	ToolActor->SetCurrentBoxLocation(this);
-	//}
-	//FVector BoxOrigin = RightHandBox->GetComponentLocation();
-	//FVector BoxExtent = RightHandBox->GetScaledBoxExtent(); // »ñÈ¡Åö×²ºÐµÄ³ß´ç
-	//
-	//// »­³öµ÷ÊÔ¿ò
-	//DrawDebugBox(GetWorld(), BoxOrigin, BoxExtent, FQuat::Identity, FColor::Green, false, -1.0f, 0, 2.0f);
 }
 
 // Called to bind functionality to input
@@ -65,16 +91,46 @@ void APracticeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// Add Input Mapping Context
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
+	}
+
+	// Set up action bindings
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+
+		// Jumping
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		// Moving
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APracticeCharacter::Move);
+
+		// Looking
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APracticeCharacter::Look);
+	}
+	else
+	{
+		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
+
+#if 0
 	PlayerInputComponent->BindAxis("MoveForward",this,&APracticeCharacter::CharacterMoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APracticeCharacter::CharacterMoveRight); 
 	PlayerInputComponent->BindAxis("Turn", this, &APracticeCharacter::CameraTurn);
 	PlayerInputComponent->BindAxis("LookUp", this, &APracticeCharacter::CameraLookUp); 
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APracticeCharacter::Jump); 
+#endif
 	PlayerInputComponent->BindAction("Damage", IE_Pressed, this, &APracticeCharacter::CauseDamage);
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &APracticeCharacter::CharacterEquip); 
 	PlayerInputComponent->BindAction("Drop", IE_Pressed, this, &APracticeCharacter::CharacterDropTool); 
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APracticeCharacter::CharacterAttack);
+
 }
 
 void APracticeCharacter::CharacterMoveForward(float Value)
